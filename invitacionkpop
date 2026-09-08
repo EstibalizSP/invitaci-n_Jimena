@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invitación de Jimena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Poppins', sans-serif;
+    background: radial-gradient(circle at 20% 10%, #2a0a4a, #10061f 55%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 12px;
+  }
+  .card {
+    width: 100%;
+    max-width: 400px;
+    background: linear-gradient(180deg, #1a0933 0%, #150726 100%);
+    border-radius: 28px;
+    padding: 28px 22px 26px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 30px 60px rgba(0,0,0,0.5);
+  }
+  .glow {
+    position: absolute;
+    width: 220px;
+    height: 220px;
+    border-radius: 50%;
+    filter: blur(60px);
+    opacity: 0.55;
+    z-index: 0;
+  }
+  .glow.pink { background: #ff2e93; top: -60px; left: -60px; }
+  .glow.cyan { background: #00e5ff; bottom: -50px; right: -70px; }
+
+  .content { position: relative; z-index: 1; }
+
+  .eyebrow {
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #ffd447;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  h1 {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: 34px;
+    text-align: center;
+    line-height: 1.05;
+    background: linear-gradient(90deg, #ff6fc9, #a06bff 55%, #4fd8ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 2px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #d9c9ff;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 20px;
+  }
+
+  .photo-frame {
+    width: 168px;
+    height: 168px;
+    margin: 0 auto 18px;
+    border-radius: 50%;
+    padding: 5px;
+    background: conic-gradient(from 0deg, #ff2e93, #a06bff, #00e5ff, #ffd447, #ff2e93);
+    position: relative;
+  }
+  .photo-inner {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: #1a0933 url('') center/cover no-repeat;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    cursor: pointer;
+    border: 3px solid #150726;
+  }
+  .photo-inner img { width: 100%; height: 100%; object-fit: cover; display: none; }
+  .photo-placeholder {
+    color: #b9a4e8;
+    font-size: 12px;
+    text-align: center;
+    line-height: 1.4;
+    padding: 0 18px;
+    font-weight: 500;
+  }
+  .photo-placeholder svg { width: 26px; height: 26px; margin-bottom: 6px; opacity: 0.8; }
+  #photoInput { display: none; }
+
+  .ticket {
+    background: rgba(255,255,255,0.05);
+    border: 1px dashed rgba(255,255,255,0.25);
+    border-radius: 18px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+  }
+  .ticket-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 0;
+  }
+  .ticket-row + .ticket-row {
+    border-top: 1px solid rgba(255,255,255,0.08);
+  }
+  .ticket-icon {
+    font-size: 18px;
+    width: 22px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+  .ticket-label {
+    font-size: 11px;
+    color: #b9a4e8;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin-bottom: 2px;
+  }
+  .ticket-value {
+    font-size: 15px;
+    color: #fdf6ff;
+    font-weight: 500;
+  }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    border: none;
+    border-radius: 14px;
+    padding: 14px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    text-decoration: none;
+    margin-bottom: 10px;
+  }
+  .btn-map {
+    background: linear-gradient(90deg, #ff2e93, #a06bff);
+    color: #fff;
+  }
+  .btn-sound {
+    background: rgba(255,255,255,0.08);
+    color: #fdf6ff;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+  .btn-sound.playing { background: rgba(0,229,255,0.15); border-color: #00e5ff; }
+
+  .marquee {
+    width: 100%;
+    overflow: hidden;
+    background: rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 8px 0;
+    margin-bottom: 16px;
+    white-space: nowrap;
+  }
+  .marquee span {
+    display: inline-block;
+    padding-left: 100%;
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 700;
+    font-size: 15px;
+    color: #ffd447;
+    animation: scrollText 9s linear infinite;
+  }
+  @keyframes scrollText {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+
+  .confetti-piece {
+    position: fixed;
+    top: -20px;
+    width: 9px;
+    height: 9px;
+    z-index: 50;
+    pointer-events: none;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(540deg); opacity: 0.9; }
+  }
+  .heart-piece {
+    position: fixed;
+    bottom: -20px;
+    z-index: 50;
+    pointer-events: none;
+    font-size: 18px;
+    animation: floatUp linear forwards;
+  }
+  @keyframes floatUp {
+    to { transform: translateY(-110vh) translateX(var(--drift, 0px)); opacity: 0; }
+  }
+
+  .lyrics {
+    margin-top: 10px;
+    font-size: 13px;
+    color: #d9c9ff;
+    text-align: center;
+    line-height: 1.5;
+    font-style: italic;
+    min-height: 18px;
+  }
+
+  .footer-note {
+    text-align: center;
+    font-size: 11px;
+    color: #7a6ba0;
+    margin-top: 14px;
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="glow pink"></div>
+  <div class="glow cyan"></div>
+
+  <div class="content">
+    <div class="eyebrow">COMEBACK ESPECIAL</div>
+    <h1>¡Jimena<br>cumple 7!</h1>
+
+    <div class="marquee"><span>🎉 Jimena cumple 7 años 🎉 &nbsp;&nbsp;&nbsp; 💗 Fiesta especial 💗 &nbsp;&nbsp;&nbsp; 🎉 Jimena cumple 7 años 🎉</span></div>
+
+    <div class="photo-frame">
+      <label class="photo-inner" id="photoInner" for="photoInput">
+        <div class="photo-placeholder" id="photoPlaceholder" style="display:none">
+          <div>📸</div>
+          Toca para poner<br>la foto de Jimena
+        </div>
+        <img id="photoImg" src="jimena.jpg" alt="Foto de Jimena" style="display:block">
+      </label>
+      <input type="file" id="photoInput" accept="image/*">
+    </div>
+
+    <div class="ticket">
+      <div class="ticket-row">
+        <div class="ticket-icon">📅</div>
+        <div>
+          <div class="ticket-label">Cuándo</div>
+          <div class="ticket-value">Domingo 4 de octubre, 16:30h</div>
+        </div>
+      </div>
+      <div class="ticket-row">
+        <div class="ticket-icon">📍</div>
+        <div>
+          <div class="ticket-label">Dónde</div>
+          <div class="ticket-value">Sueño Infantil</div>
+          <div class="ticket-label" style="text-transform:none; letter-spacing:0; margin-top:2px;">C. Real, 32, Loc 17, 41800 Sanlúcar la Mayor, Sevilla</div>
+        </div>
+      </div>
+    </div>
+
+    <a class="btn btn-map" href="https://www.google.com/maps/search/?api=1&query=37.3856143%2C-6.1995541&query_place_id=ChIJOWGYXxQREg0R_q9G2-CntVM" target="_blank" rel="noopener">
+      🗺️ Cómo llegar (Google Maps)
+    </a>
+
+    <button class="btn btn-sound" id="soundBtn">🔊 Escuchar la invitación</button>
+    <div class="lyrics" id="lyricsText"></div>
+
+    <div class="footer-note">¡Te esperamos para bailar y celebrar!</div>
+  </div>
+</div>
+
+<script>
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
+  }
+  window.addEventListener('load', function() { setTimeout(burstConfetti, 400); });
+
+  const photoInput = document.getElementById('photoInput');
+  const photoImg = document.getElementById('photoImg');
+  const photoPlaceholder = document.getElementById('photoPlaceholder');
+  photoInput.addEventListener('change', function() {
+    const file = this.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      photoImg.src = e.target.result;
+      photoImg.style.display = 'block';
+      photoPlaceholder.style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const soundBtn = document.getElementById('soundBtn');
+  const lyricsText = document.getElementById('lyricsText');
+  const message = "Hey! Hey! Are you ready? ¡Es el cumple de Jimena! Three, two, one... let's go! Hoy ha llegado un día especial, hay una estrella que quiere brillar. Siete velitas, siete deseos, y mil aventuras que vamos a empezar. Jimena sonríe, qué emoción, hoy late fuerte su corazón. Pero esta fiesta no puede empezar si sus amigos no vienen a celebrar. Ven, ven, ven, no puedes faltar, hay una fiesta que va a comenzar. Ríe, salta, ven a bailar, este cumpleaños lo vamos a recordar. Jimena's party, oh oh oh, siete años, let's go. Manos arriba, gira sin parar, hoy todos juntos vamos a celebrar. Jimena's party, yeah yeah yeah, ven con nosotros, qué bien lo vamos a pasar. Amigos, risas, juegos y diversión, hoy compartimos esta celebración. Seven, seven, Jimena tiene seven, siete años, party level eleven. Salta, ríe, ven aquí, que esta fiesta empieza ya, sí sí. Uno, dos, tres, vamos a bailar. Cuatro, cinco, seis, no pares de saltar. Y cuando llegue el siete, Jimena va a brillar. Happy birthday, Jimena. Seven years. Que empiece la fiesta. Jimena, hey. Jimena, hey. Jimena, hey. Let's party.";
+
+  let audioCtx = null;
+  let masterGain = null;
+  let beatTimer = null;
+  let beatOn = false;
+  const beatSec = 60 / 100;
+  const chordSets = [
+    [261.63, 329.63, 392.0],
+    [220.0, 277.18, 329.63],
+    [246.94, 311.13, 392.0],
+    [220.0, 277.18, 349.23]
+  ];
+  let chordIndex = 0;
+  let stepIndex = 0;
+
+  function ensureAudio() {
+    try {
+      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      if (!masterGain) {
+        masterGain = audioCtx.createGain();
+        masterGain.gain.value = 0.9;
+        masterGain.connect(audioCtx.destination);
+      }
+      return true;
+    } catch (e) {
+      lyricsText.textContent = 'Este navegador no permite reproducir sonido aquí.';
+      return false;
+    }
+  }
+
+  function playFanfare() {
+    try {
+      ensureAudio();
+      const notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach((freq, i) => {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'triangle';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0.0001, audioCtx.currentTime + i * 0.14);
+        gain.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + i * 0.14 + 0.03);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + i * 0.14 + 0.35);
+        osc.connect(gain).connect(masterGain);
+        osc.start(audioCtx.currentTime + i * 0.14);
+        osc.stop(audioCtx.currentTime + i * 0.14 + 0.4);
+      });
+    } catch (e) {}
+  }
+
+  function scheduleStep() {
+    const t = audioCtx.currentTime;
+    const kick = audioCtx.createOscillator();
+    const kickGain = audioCtx.createGain();
+    kick.frequency.setValueAtTime(110, t);
+    kick.frequency.exponentialRampToValueAtTime(45, t + 0.1);
+    kickGain.gain.setValueAtTime(0.22, t);
+    kickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+    kick.connect(kickGain).connect(masterGain);
+    kick.start(t);
+    kick.stop(t + 0.16);
+
+    if (stepIndex % 4 === 0) {
+      chordIndex = (chordIndex + 1) % chordSets.length;
+      chordSets[chordIndex].forEach(freq => {
+        const pad = audioCtx.createOscillator();
+        const padGain = audioCtx.createGain();
+        pad.type = 'triangle';
+        pad.frequency.value = freq;
+        padGain.gain.setValueAtTime(0.0001, t);
+        padGain.gain.linearRampToValueAtTime(0.05, t + 0.15);
+        padGain.gain.linearRampToValueAtTime(0.0001, t + beatSec * 4 - 0.1);
+        pad.connect(padGain).connect(masterGain);
+        pad.start(t);
+        pad.stop(t + beatSec * 4);
+      });
+    }
+
+    if (stepIndex % 2 === 1) {
+      const hat = audioCtx.createOscillator();
+      const hatGain = audioCtx.createGain();
+      hat.type = 'square';
+      hat.frequency.value = 9000;
+      hatGain.gain.setValueAtTime(0.018, t);
+      hatGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
+      hat.connect(hatGain).connect(masterGain);
+      hat.start(t);
+      hat.stop(t + 0.05);
+    }
+
+    stepIndex++;
+  }
+
+  function startBeat() {
+    ensureAudio();
+    masterGain.gain.setTargetAtTime(0.5, audioCtx.currentTime, 0.05);
+    if (beatOn) return;
+    beatOn = true;
+    stepIndex = 0;
+    chordIndex = -1;
+    scheduleStep();
+    beatTimer = setInterval(scheduleStep, beatSec * 1000);
+  }
+
+  function stopBeat() {
+    beatOn = false;
+    if (beatTimer) { clearInterval(beatTimer); beatTimer = null; }
+    if (masterGain && audioCtx) {
+      masterGain.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.05);
+    }
+  }
+
+  function speakMessage() {
+    if (!('speechSynthesis' in window)) {
+      lyricsText.textContent = message;
+      stopAll();
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(message);
+    utter.lang = 'es-ES';
+    utter.pitch = 1.3;
+    utter.rate = 1.0;
+    utter.volume = 1;
+    const voices = window.speechSynthesis.getVoices();
+    const esVoice = voices.find(v => v.lang && v.lang.startsWith('es'));
+    if (esVoice) utter.voice = esVoice;
+    lyricsText.textContent = '🎶';
+    utter.onend = function() { stopAll(); };
+    utter.onerror = function() { stopAll(); };
+    window.speechSynthesis.speak(utter);
+    setTimeout(function() {
+      if (!window.speechSynthesis.speaking) {
+        stopAll();
+        lyricsText.textContent = 'No se ha podido reproducir el sonido en este dispositivo.';
+      }
+    }, 1200);
+  }
+
+  function burstConfetti() {
+    const colors = ['#ff2e93', '#a06bff', '#00e5ff', '#ffd447', '#ff6fc9'];
+    for (let i = 0; i < 26; i++) {
+      const piece = document.createElement('div');
+      piece.className = 'confetti-piece';
+      piece.style.left = Math.random() * 100 + 'vw';
+      piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+      piece.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      const duration = 2.2 + Math.random() * 1.6;
+      piece.style.animationDuration = duration + 's';
+      piece.style.animationDelay = (Math.random() * 0.4) + 's';
+      document.body.appendChild(piece);
+      setTimeout(() => piece.remove(), (duration + 1) * 1000);
+    }
+    const hearts = ['💗', '💜', '💙', '⭐'];
+    for (let i = 0; i < 12; i++) {
+      const heart = document.createElement('div');
+      heart.className = 'heart-piece';
+      heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+      heart.style.left = Math.random() * 100 + 'vw';
+      heart.style.setProperty('--drift', (Math.random() * 60 - 30) + 'px');
+      const duration = 3 + Math.random() * 2;
+      heart.style.animationDuration = duration + 's';
+      heart.style.animationDelay = (Math.random() * 0.6) + 's';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), (duration + 1) * 1000);
+    }
+  }
+
+  function stopAll() {
+    stopBeat();
+    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    soundBtn.classList.remove('playing');
+    soundBtn.textContent = '🔊 Escuchar la invitación';
+  }
+
+  soundBtn.addEventListener('click', function() {
+    if (soundBtn.classList.contains('playing')) {
+      stopAll();
+      return;
+    }
+    soundBtn.classList.add('playing');
+    soundBtn.textContent = '⏸ Parar';
+    lyricsText.textContent = '';
+    playFanfare();
+    startBeat();
+    speakMessage();
+    burstConfetti();
+  });
+</script>
+
+</body>
+</html>
