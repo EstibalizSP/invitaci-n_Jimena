@@ -283,11 +283,9 @@
   </div>
 </div>
 
+<audio id="miCancion" src="AUD-20260908-WA0046.mp3" preload="auto"></audio>
+
 <script>
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.getVoices();
-    window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); };
-  }
   window.addEventListener('load', function() { setTimeout(burstConfetti, 400); });
 
   const photoInput = document.getElementById('photoInput');
@@ -307,145 +305,6 @@
 
   const soundBtn = document.getElementById('soundBtn');
   const lyricsText = document.getElementById('lyricsText');
-  const message = "Hey! Hey! Are you ready? ¡Es el cumple de Jimena! Three, two, one... let's go! Hoy ha llegado un día especial, hay una estrella que quiere brillar. Siete velitas, siete deseos, y mil aventuras que vamos a empezar. Jimena sonríe, qué emoción, hoy late fuerte su corazón. Pero esta fiesta no puede empezar si sus amigos no vienen a celebrar. Ven, ven, ven, no puedes faltar, hay una fiesta que va a comenzar. Ríe, salta, ven a bailar, este cumpleaños lo vamos a recordar. Jimena's party, oh oh oh, siete años, let's go. Manos arriba, gira sin parar, hoy todos juntos vamos a celebrar. Jimena's party, yeah yeah yeah, ven con nosotros, qué bien lo vamos a pasar. Amigos, risas, juegos y diversión, hoy compartimos esta celebración. Seven, seven, Jimena tiene seven, siete años, party level eleven. Salta, ríe, ven aquí, que esta fiesta empieza ya, sí sí. Uno, dos, tres, vamos a bailar. Cuatro, cinco, seis, no pares de saltar. Y cuando llegue el siete, Jimena va a brillar. Happy birthday, Jimena. Seven years. Que empiece la fiesta. Jimena, hey. Jimena, hey. Jimena, hey. Let's party.";
-
-  let audioCtx = null;
-  let masterGain = null;
-  let beatTimer = null;
-  let beatOn = false;
-  const beatSec = 60 / 100;
-  const chordSets = [
-    [261.63, 329.63, 392.0],
-    [220.0, 277.18, 329.63],
-    [246.94, 311.13, 392.0],
-    [220.0, 277.18, 349.23]
-  ];
-  let chordIndex = 0;
-  let stepIndex = 0;
-
-  function ensureAudio() {
-    try {
-      audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      if (!masterGain) {
-        masterGain = audioCtx.createGain();
-        masterGain.gain.value = 0.9;
-        masterGain.connect(audioCtx.destination);
-      }
-      return true;
-    } catch (e) {
-      lyricsText.textContent = 'Este navegador no permite reproducir sonido aquí.';
-      return false;
-    }
-  }
-
-  function playFanfare() {
-    try {
-      ensureAudio();
-      const notes = [523.25, 659.25, 783.99, 1046.5];
-      notes.forEach((freq, i) => {
-        const osc = audioCtx.createOscillator();
-        const gain = audioCtx.createGain();
-        osc.type = 'triangle';
-        osc.frequency.value = freq;
-        gain.gain.setValueAtTime(0.0001, audioCtx.currentTime + i * 0.14);
-        gain.gain.linearRampToValueAtTime(0.18, audioCtx.currentTime + i * 0.14 + 0.03);
-        gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + i * 0.14 + 0.35);
-        osc.connect(gain).connect(masterGain);
-        osc.start(audioCtx.currentTime + i * 0.14);
-        osc.stop(audioCtx.currentTime + i * 0.14 + 0.4);
-      });
-    } catch (e) {}
-  }
-
-  function scheduleStep() {
-    const t = audioCtx.currentTime;
-    const kick = audioCtx.createOscillator();
-    const kickGain = audioCtx.createGain();
-    kick.frequency.setValueAtTime(110, t);
-    kick.frequency.exponentialRampToValueAtTime(45, t + 0.1);
-    kickGain.gain.setValueAtTime(0.22, t);
-    kickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
-    kick.connect(kickGain).connect(masterGain);
-    kick.start(t);
-    kick.stop(t + 0.16);
-
-    if (stepIndex % 4 === 0) {
-      chordIndex = (chordIndex + 1) % chordSets.length;
-      chordSets[chordIndex].forEach(freq => {
-        const pad = audioCtx.createOscillator();
-        const padGain = audioCtx.createGain();
-        pad.type = 'triangle';
-        pad.frequency.value = freq;
-        padGain.gain.setValueAtTime(0.0001, t);
-        padGain.gain.linearRampToValueAtTime(0.05, t + 0.15);
-        padGain.gain.linearRampToValueAtTime(0.0001, t + beatSec * 4 - 0.1);
-        pad.connect(padGain).connect(masterGain);
-        pad.start(t);
-        pad.stop(t + beatSec * 4);
-      });
-    }
-
-    if (stepIndex % 2 === 1) {
-      const hat = audioCtx.createOscillator();
-      const hatGain = audioCtx.createGain();
-      hat.type = 'square';
-      hat.frequency.value = 9000;
-      hatGain.gain.setValueAtTime(0.018, t);
-      hatGain.gain.exponentialRampToValueAtTime(0.0001, t + 0.04);
-      hat.connect(hatGain).connect(masterGain);
-      hat.start(t);
-      hat.stop(t + 0.05);
-    }
-
-    stepIndex++;
-  }
-
-  function startBeat() {
-    ensureAudio();
-    masterGain.gain.setTargetAtTime(0.5, audioCtx.currentTime, 0.05);
-    if (beatOn) return;
-    beatOn = true;
-    stepIndex = 0;
-    chordIndex = -1;
-    scheduleStep();
-    beatTimer = setInterval(scheduleStep, beatSec * 1000);
-  }
-
-  function stopBeat() {
-    beatOn = false;
-    if (beatTimer) { clearInterval(beatTimer); beatTimer = null; }
-    if (masterGain && audioCtx) {
-      masterGain.gain.setTargetAtTime(0.0001, audioCtx.currentTime, 0.05);
-    }
-  }
-
-  function speakMessage() {
-    if (!('speechSynthesis' in window)) {
-      lyricsText.textContent = message;
-      stopAll();
-      return;
-    }
-    window.speechSynthesis.cancel();
-    const utter = new SpeechSynthesisUtterance(message);
-    utter.lang = 'es-ES';
-    utter.pitch = 1.3;
-    utter.rate = 1.0;
-    utter.volume = 1;
-    const voices = window.speechSynthesis.getVoices();
-    const esVoice = voices.find(v => v.lang && v.lang.startsWith('es'));
-    if (esVoice) utter.voice = esVoice;
-    lyricsText.textContent = '🎶';
-    utter.onend = function() { stopAll(); };
-    utter.onerror = function() { stopAll(); };
-    window.speechSynthesis.speak(utter);
-    setTimeout(function() {
-      if (!window.speechSynthesis.speaking) {
-        stopAll();
-        lyricsText.textContent = 'No se ha podido reproducir el sonido en este dispositivo.';
-      }
-    }, 1200);
-  }
 
   function burstConfetti() {
     const colors = ['#ff2e93', '#a06bff', '#00e5ff', '#ffd447', '#ff6fc9'];
@@ -477,8 +336,9 @@
   }
 
   function stopAll() {
-    stopBeat();
-    if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+    const cancion = document.getElementById('miCancion');
+    cancion.pause();
+    cancion.currentTime = 0;
     soundBtn.classList.remove('playing');
     soundBtn.textContent = '🔊 Escuchar la invitación';
   }
@@ -491,9 +351,14 @@
     soundBtn.classList.add('playing');
     soundBtn.textContent = '⏸ Parar';
     lyricsText.textContent = '';
-    playFanfare();
-    startBeat();
-    speakMessage();
+    const cancion = document.getElementById('miCancion');
+    cancion.currentTime = 0;
+    cancion.play().catch(function() {
+      lyricsText.textContent = 'No se pudo reproducir el mp3 en este dispositivo.';
+      soundBtn.classList.remove('playing');
+      soundBtn.textContent = '🔊 Escuchar la invitación';
+    });
+    cancion.onended = stopAll;
     burstConfetti();
   });
 </script>
